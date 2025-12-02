@@ -2,6 +2,9 @@ package org.example.day02
 
 import kotlin.math.pow
 
+/**
+ * Build and cache different types of invalid numbers by number of digits
+ */
 object InvalidNumberBuilder {
 
     private val mirrorMemo: MutableMap<Int, List<Long>> = mutableMapOf()
