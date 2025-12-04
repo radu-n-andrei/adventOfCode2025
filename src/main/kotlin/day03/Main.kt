@@ -1,6 +1,7 @@
 package org.example.day03
 
 import org.example.LoadInput
+import org.example.Utils.zipWithIndex
 import kotlin.math.pow
 
 fun main() {
@@ -19,7 +20,7 @@ fun dynamicJoltage(bank: String, batteriesLeftToAdd: Int, totalPower: Long, atIn
     if (batteriesLeftToAdd == 0) {
         return totalPower
     } else {
-        val batteries = bank.toList().zip((0..bank.length - 1))
+        val batteries = bank.toList().zipWithIndex()
             .map { p -> Battery(p.first.digitToInt(), p.second) }
         val currentBattery =
             batteries.dropLast(batteriesLeftToAdd - 1)

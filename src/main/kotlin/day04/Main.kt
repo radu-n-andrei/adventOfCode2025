@@ -1,13 +1,13 @@
 package org.example.day04
 
 import org.example.LoadInput
-import java.util.Optional
+import org.example.Utils.zipWithIndex
 
 data class Row(val index: Int, val spaces: List<Boolean>)
 
 fun main() {
     val input = LoadInput.load("/day04/input.in", { br -> br.readLines().map { line -> line.map { c -> c == '@' } } })
-    val rows = input.zip(0..<input.size).map { (row, index) -> Row(index, row) }
+    val rows = input.zipWithIndex().map { (row, index) -> Row(index, row) }
     println("P1: " + movePaperAround(rows, false))
     println("P2: " + movePaperAround(rows, true))
 }
@@ -45,11 +45,11 @@ fun recCheck(rows: List<Row>, currentRowIndex: Int, total: Int, updatedRows: Lis
         return neighbours.filter { b -> b != null && b }.size
     }
 
-    val valid = currentRow.spaces.zip(0..<currentRow.spaces.size).filter { (space, index) ->
+    val valid = currentRow.spaces.zipWithIndex().filter { (space, index) ->
         space && countAround(index) < 4
     }
     val validSize = valid.size
-    val updatedRow = currentRow.spaces.zip(0..<currentRow.spaces.size).map { (s, i) ->
+    val updatedRow = currentRow.spaces.zipWithIndex().map { (s, i) ->
         if (valid.map { p -> p.second }.contains(i)) false else s
     }
     val newRows = updatedRows.plus(currentRow.copy(spaces = updatedRow))
