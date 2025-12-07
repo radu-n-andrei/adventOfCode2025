@@ -6,7 +6,7 @@ import org.example.Utils.zipWithIndex
 data class Row(val index: Int, val spaces: List<Boolean>)
 
 fun main() {
-    val input = LoadInput.load("/day04/input.in", { br -> br.readLines().map { line -> line.map { c -> c == '@' } } })
+    val input = LoadInput.load("/day04/input.in") { br -> br.readLines().map { line -> line.map { c -> c == '@' } } }
     val rows = input.zipWithIndex().map { (row, index) -> Row(index, row) }
     println("P1: " + movePaperAround(rows, false))
     println("P2: " + movePaperAround(rows, true))
@@ -18,10 +18,10 @@ fun movePaperAround(rows: List<Row>, keepGoing: Boolean): Int {
     } else {
         fun moveSomeMore(rows: List<Row>, total: Int): Int {
             val (iterationTotal, newList) = recCheck(rows, 0, 0, listOf())
-            if (iterationTotal != 0) {
-                return moveSomeMore(newList, total + iterationTotal)
+            return if (iterationTotal != 0) {
+                moveSomeMore(newList, total + iterationTotal)
             } else {
-                return total
+                total
             }
         }
         return moveSomeMore(rows, 0)

@@ -28,7 +28,7 @@ data class Range(val low: Long, val high: Long) {
 }
 
 fun main() {
-    val input = LoadInput.load("/day05/input.in", { br -> br.readLines() })
+    val input = LoadInput.load("/day05/input.in") { br -> br.readLines() }
     val ranges = input.takeWhile(String::isNotEmpty).map(Range::fromString)
     val ids = input.takeLastWhile(String::isNotEmpty).map(String::toLong)
     println("P1: " + ids.filter { id -> ranges.find { range -> id in range.low..range.high } != null }.size)
@@ -44,7 +44,7 @@ fun mergeRanges(rangesToCheck: List<Range>, sol: List<Range>): List<Range> {
         val rest = rangesToCheck.drop(1)
         val (overlapping, distinct) = rest.partition { r -> r.overlapsWith(toCheck) }
         if (overlapping.isNotEmpty()) {
-            val merged = overlapping.fold(toCheck, { acc, r -> acc.merge(r) })
+            val merged = overlapping.fold(toCheck) { acc, r -> acc.merge(r) }
             return mergeRanges(distinct.plus(merged), sol)
         } else {
             return mergeRanges(distinct, sol.plus(toCheck))

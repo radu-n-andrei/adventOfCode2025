@@ -4,7 +4,7 @@ import org.example.LoadInput
 
 fun main() {
     //val rotations = Rotation.parseFile("/day01/input.in")
-    val rotations = LoadInput.load("/day01/input.in", { br ->
+    val rotations = LoadInput.load("/day01/input.in") { br ->
         br.readLines()
             .map { line ->
                 val d = DialDirection.valueOf(line.first().toString())
@@ -13,7 +13,7 @@ fun main() {
                 val ov = nr / 100
                 Rotation(d, value, ov)
             }
-    })
+    }
 
     println(
         "P1: " +

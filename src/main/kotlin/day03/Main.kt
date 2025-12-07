@@ -5,7 +5,7 @@ import org.example.Utils.zipWithIndex
 import kotlin.math.pow
 
 fun main() {
-    val input = LoadInput.load("/day03/input.in", { br -> br.readLines() })
+    val input = LoadInput.load("/day03/input.in") { br -> br.readLines() }
     println("P1:" + input.sumOf { i -> joltage(i, 2) })
     println("P2:" + input.sumOf { i -> joltage(i, 12) })
 }
@@ -25,8 +25,8 @@ fun dynamicJoltage(bank: String, batteriesLeftToAdd: Int, totalPower: Long, atIn
         val currentBattery =
             batteries.dropLast(batteriesLeftToAdd - 1)
                 .fold(
-                    Battery(0, -1),
-                    { acc: Battery, current: Battery -> if (current.power > acc.power) current else acc })
+                    Battery(0, -1)
+                ) { acc: Battery, current: Battery -> if (current.power > acc.power) current else acc }
         return dynamicJoltage(
             bank.substring(currentBattery.position + 1),
             batteriesLeftToAdd - 1,
