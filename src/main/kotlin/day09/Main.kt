@@ -96,7 +96,6 @@ data class Tile(val x: Int, val y: Int) {
             )
             val result = projections.indexOf(null) < 0 &&
                     projections.map { p -> p ?: Side.L }.distinct().size == 1
-            //println("Result for $this - $result")
             return result
         }
     }
@@ -148,12 +147,6 @@ data class Route(val start: Tile, val end: Tile) {
     }
 }
 
-data class Memo(val knownIn: List<Tile>, val knownOut: List<Tile>) {
-    companion object {
-        val empty = Memo(listOf(), listOf())
-    }
-}
-
 var knownOut: List<Tile> = emptyList()
 
 fun main() {
@@ -173,8 +166,6 @@ fun main() {
 
     println("P2:" + sortedInput.dropLast(1).fold(Pair(0L, sortedInput.drop(1))) { acc, tile ->
         val (maxArea, remainingTiles) = acc
-        //val remainingTiles = rem.reversed()
-        println("remaining: ${remainingTiles.size} - max at $maxArea")
         // could use some memos here
         val maxxing = remainingTiles.fold(maxArea) { max, t ->
             val simpleArea = tile.area(t)
@@ -191,57 +182,6 @@ fun main() {
             remainingTiles.drop(1)
         )
     }.first)
-
-    // with memo
-    /*println("P2_memo:" + sortedInput.dropLast(1).fold(Triple(0L, sortedInput.drop(1), Memo.empty)) { acc, tile ->
-        val (maxArea, remainingTiles, memo) = acc
-        println("remaining: ${remainingTiles.size} - max at $maxArea")
-        val (acceptable, outside, inside) = expandCorner(
-            tile,
-            remainingTiles, listOf(), memo.knownOut, memo.knownIn, routes
-        )
-        val m = if (acceptable.isNotEmpty()) acceptable.maxOf { t -> tile.area(t) } else maxArea
-        Triple(
-            if (maxArea > m) maxArea else m,
-            remainingTiles.drop(1),
-            Memo(knownOut = (memo.knownOut + outside), knownIn = (memo.knownIn + inside).distinct())
-        )
-
-    }.first)*/
-
-}
-
-fun expandCorner(
-    cornerTile: Tile,
-    pairingTiles: List<Tile>,
-    acceptableTiles: List<Tile>,
-    knownToBeOutside: List<Tile>,
-    knownToBeInside: List<Tile>,
-    routes: List<Route>
-): Triple<List<Tile>, List<Tile>, List<Tile>> {
-    println("expanding $cornerTile - remaining ${pairingTiles.size} - acceptable ${acceptableTiles.size} - known ${knownToBeOutside.size} - routes ${routes.size}")
-    if (pairingTiles.isEmpty())
-        return Triple(acceptableTiles, knownToBeOutside, knownToBeInside)
-    else {
-        val toCheck = pairingTiles.first()
-        val (outlineCheck, failedTile, successful) = checkRectangle(
-            cornerTile,
-            toCheck,
-            knownToBeOutside,
-            knownToBeInside,
-            routes
-        )
-        val accepted = if (outlineCheck) acceptableTiles.plus(cornerTile) else acceptableTiles
-        val out = if (failedTile != null) knownToBeOutside.plus(failedTile) else knownToBeOutside
-        return expandCorner(
-            cornerTile,
-            pairingTiles.drop(1),
-            accepted,
-            out,
-            (knownToBeInside + successful).distinct(),
-            routes
-        )
-    }
 }
 
 fun checkRectangleMini(
@@ -253,41 +193,10 @@ fun checkRectangleMini(
     return if (outline.intersect(knownOut).isNotEmpty()) false
     else {
         val outs = outline.find { t -> !t.projectIntoTheBeyond(routes) }
-        if (outs== null) true
+        if (outs == null) true
         else {
             knownOut += outs
             false
         }
-    }
-}
-
-fun checkRectangle(
-    tile1: Tile,
-    tile2: Tile,
-    knownToBeOutside: List<Tile>,
-    knownToBeInside: List<Tile>,
-    routes: List<Route>
-): Triple<Boolean, Tile?, List<Tile>> {
-    val outline = tile1.outline(tile2)
-    println("Rectangle check: ${outline.size}")
-    if (outline.intersect(knownToBeOutside.toSet()).isEmpty()) {
-        println("FUUUUCK")
-        fun checkTiles(tiles: List<Tile>): Tile? {
-            return if (tiles.isEmpty()) {
-                null
-            } else {
-                val toCheck = tiles.first()
-                if (knownToBeInside.contains(toCheck)) checkTiles(tiles.drop(1))
-                if (toCheck.projectIntoTheBeyond(routes)) {
-                    checkTiles(tiles.drop(1))
-                } else toCheck
-            }
-        }
-
-        val check = checkTiles(outline)
-        val acceptable = if (check == null) outline else listOf()
-        return Triple(check == null, check, acceptable)
-    } else {
-        return Triple(false, null, listOf())
     }
 }
